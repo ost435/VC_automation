@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Company List</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f5f5f5; }
+    form, .exports { margin-bottom: 12px; }
+    .chip { display: inline-block; padding: 2px 8px; background: #eef; border-radius: 999px; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <h1>VC Company Pipeline</h1>
+
+  <form method="get" action="/">
+    <label>Vertical:
+      <select name="vertical">
+        <option value="">All</option>
+        {% for v in all_verticals %}
+          <option value="{{ v }}" {% if selected.vertical == v %}selected{% endif %}>{{ v }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Stage:
+      <select name="stage">
+        <option value="">All</option>
+        {% for s in all_stages %}
+          <option value="{{ s }}" {% if selected.stage == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Fit:
+      <select name="fit_label">
+        <option value="">All</option>
+        {% for f in all_fit_labels %}
+          <option value="{{ f }}" {% if selected.fit_label == f %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <button type="submit">Apply Filters</button>
+  </form>
+
+  <div class="exports">
+    <a href="/export/json?vertical={{ selected.vertical or '' }}&stage={{ selected.stage or '' }}&fit_label={{ selected.fit_label or '' }}">Export JSON</a>
+    |
+    <a href="/export/csv?vertical={{ selected.vertical or '' }}&stage={{ selected.stage or '' }}&fit_label={{ selected.fit_label or '' }}">Export CSV</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Fit Label</th>
+        <th>Verticals</th>
+        <th>Stage Guess</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for company in companies %}
+      <tr>
+        <td><a href="/company/{{ company.id }}">{{ company.name }}</a></td>
+        <td>{{ company.fit_label }}</td>
+        <td>
+          {% for vertical in company.verticals %}
+            <span class="chip">{{ vertical }}</span>
+          {% endfor %}
+        </td>
+        <td>{{ company.stage_guess }}</td>
+        <td>{{ company.last_updated }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
